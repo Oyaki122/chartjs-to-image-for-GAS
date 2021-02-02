@@ -77,4 +77,4 @@ class ChartJsImage4Gas {
   }
 }
 
-export default ChartJsImage
+export default ChartJsImage4Gas
