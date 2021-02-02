@@ -1,9 +1,6 @@
-const fs = require('fs');
+import {stringify} from 'javascript-stringify'
 
-const axios = require('axios');
-const { stringify } = require('javascript-stringify');
-
-class ChartJsImage {
+class ChartJsImage4Gas {
   constructor(apiKey, accountId) {
     this.apiKey = apiKey;
     this.accountId = accountId;
@@ -61,80 +58,23 @@ class ChartJsImage {
     if (!this.isValid()) {
       throw new Error('You must call setConfig before getUrl');
     }
-    const ret = new URL(`${this.baseUrl}/chart`);
-    ret.searchParams.append('c', this.chart);
-    ret.searchParams.append('w', this.width);
-    ret.searchParams.append('h', this.height);
+    const url = `${this.baseUrl}/chart?`
+    url += `c=${encodeURIComponent(this.chart)}&`
+    url += `w=${String(this.width)}&`
+    url += `h=${String(this.height)}`
+
     if (this.devicePixelRatio !== 1.0) {
-      ret.searchParams.append('devicePixelRatio', this.devicePixelRatio);
+      url += `&devicePixelRatio=${String(this.devicePixelRatio)}`
     }
     if (this.backgroundColor !== 1.0) {
-      ret.searchParams.append('bkg', this.backgroundColor);
+      url += `&bkg=${String(this.backgroundColor)}`
     }
     if (this.format !== 1.0) {
-      ret.searchParams.append('f', this.format);
-    }
-    return ret.href;
-  }
-
-  getPostData() {
-    const { width, height, chart, format, backgroundColor, devicePixelRatio } = this;
-    const postData = {
-      width,
-      height,
-      chart,
-    };
-    if (format) {
-      postData.format = format;
-    }
-    if (backgroundColor) {
-      postData.backgroundColor = backgroundColor;
-    }
-    if (devicePixelRatio) {
-      postData.devicePixelRatio = devicePixelRatio;
-    }
-    return postData;
-  }
-
-  async getShortUrl() {
-    if (!this.isValid()) {
-      throw new Error('You must call setConfig before getUrl');
+      url += `&f=${String(this.format)}`
     }
 
-    const resp = await axios.post('https://quickchart.io/chart/create', this.getPostData());
-    if (resp.status !== 200) {
-      throw `Bad response code ${resp.status} from chart shorturl endpoint`;
-    } else if (!resp.data.success) {
-      throw 'Received failure response from chart shorturl endpoint';
-    } else {
-      return resp.data.url;
-    }
-  }
-
-  async toBinary() {
-    if (!this.isValid()) {
-      throw new Error('You must call setConfig before getUrl');
-    }
-
-    const resp = await axios.post('https://quickchart.io/chart', this.getPostData(), {
-      responseType: 'arraybuffer',
-    });
-    if (resp.status !== 200) {
-      throw `Bad response code ${resp.status} from chart shorturl endpoint`;
-    }
-    return Buffer.from(resp.data, 'binary');
-  }
-
-  async toDataUrl() {
-    const buf = await this.toBinary();
-    const b64buf = buf.toString('base64');
-    return `data:image/png;base64,${b64buf}`;
-  }
-
-  async toFile(pathOrDescriptor) {
-    const buf = await this.toBinary();
-    fs.writeFileSync(pathOrDescriptor, buf);
+    return url
   }
 }
 
-module.exports = ChartJsImage;
+export default ChartJsImage
