@@ -58,7 +58,7 @@ class ChartJsImage4Gas {
     if (!this.isValid()) {
       throw new Error('You must call setConfig before getUrl');
     }
-    const url = `${this.baseUrl}/chart?`
+    let url = `${this.baseUrl}/chart?`
     url += `c=${encodeURIComponent(this.chart)}&`
     url += `w=${String(this.width)}&`
     url += `h=${String(this.height)}`
