@@ -75,6 +75,45 @@ class ChartJsImage4Gas {
 
     return url
   }
+
+  getPostData() {
+    const { width, height, chart, format, backgroundColor, devicePixelRatio } = this;
+    const postData = {
+      width,
+      height,
+      chart,
+    };
+    if (format) {
+      postData.format = format;
+    }
+    if (backgroundColor) {
+      postData.backgroundColor = backgroundColor;
+    }
+    if (devicePixelRatio) {
+      postData.devicePixelRatio = devicePixelRatio;
+    }
+    return postData;
+  }
+
+  getShortUrl() {
+    if (!this.isValid()) {
+      throw new Error('You must call setConfig before getUrl');
+    }
+
+    const resp = UrlFetchApp.fetch('https://quickchart.io/chart/create', {
+      method: 'post',
+      payload: JSON.stringify(this.getPostData()),
+      contentType: 'application/json'
+    });
+    console.log(resp)
+    if (resp.getResponseCode() !== 200) {
+      throw `Bad response code ${resp.status} from chart shorturl endpoint`;
+    } 
+    const res =  JSON.parse(resp.getContentText())
+    if (!res.success) throw 'Received failure response from chart shorturl endpoint'
+
+    return res.url
+  }
 }
 
 export default ChartJsImage4Gas

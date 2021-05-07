@@ -13,6 +13,7 @@ declare module 'chartjs-to-image-for-gas' {
     public setFormat(fmt: string): QuickChart;
 
     public getUrl(): string;
+    public getShortUrl(): string;
   }
 
   export = ChartJsImage4Gas;
